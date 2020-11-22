@@ -147,11 +147,7 @@
                 <p onclick="hideVideoCallContainer()" title="Minimize">-</p>
             </div>
             <div id="myVideo" class="myVideo"></div>
-            <div
-                id="remoteUserVideo"
-                class="remoteUserVideo"
-                onclick="toggleVideoContainer()"
-            ></div>
+            <div id="remoteUserVideo" class="remoteUserVideo"></div>
             <div id="videoControlls">
                 <i onclick="toggleVideo(this)" class="fas fa-video-slash"></i>
                 <i onclick="toggleAudio(this)" class="fas fa-volume-mute"></i>
@@ -208,6 +204,8 @@
                         "click",
                         toggleVideoContainer
                     );
+                    myVideo.style.zIndex = "10";
+                    remoteUserVideo.style.zIndex = "5";
                 }
                 if (remoteUserVideo.className == "remoteUserVideo") {
                     remoteUserVideo.addEventListener(
@@ -215,8 +213,13 @@
                         toggleVideoContainer
                     );
                     myVideo.removeEventListener("click", toggleVideoContainer);
+                    remoteUserVideo.style.zIndex = "10";
+                    myVideo.style.zIndex = "5";
                 }
             }
+            document
+                .getElementById("remoteUserVideo")
+                .addEventListener("click", toggleVideoContainer);
         </script>
     </body>
 </html>
