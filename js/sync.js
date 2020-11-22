@@ -155,7 +155,12 @@ var RemoteUserStream;
 
 navigator.mediaDevices
     .getUserMedia({
-        video: true,
+        video: {
+            mandatory: {
+                maxWidth: 320,
+                maxHeight: 180,
+            },
+        },
         audio: true,
     })
     .then((stream) => {
