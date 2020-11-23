@@ -153,6 +153,58 @@ myVideo.muted = true;
 var MyStream;
 var RemoteUserStream;
 
+navigator.mediaDevices
+    .getUserMedia({
+        video: {
+            width: {
+                min: 120,
+                ideal: 320,
+                max: 360,
+            },
+            height: {
+                min: 120,
+                ideal: 180,
+                max: 200,
+            },
+            facingMode: "user",
+        },
+        audio: true,
+    })
+    .then((stream) => {
+        MyStream = stream;
+        console.log("Video Enabled");
+        myVideo.srcObject = stream;
+        myVideo.addEventListener("loadedmetadata", () => {
+            myVideo.play();
+        });
+        myVideoContainer.appendChild(myVideo);
+
+        peer.on("call", (call) => {
+            console.log(
+                "When other user call me, this event is triggered, i am not host"
+            );
+            call.answer(MyStream); //sending him my stream
+            var video = document.createElement("video");
+            call.on("stream", function (remoteStream) {
+                RemoteUserStream = remoteStream;
+                //to get remote users strem
+                console.log("Stream event triggered.");
+                video.srcObject = remoteStream;
+                video.addEventListener("loadedmetadata", () => {
+                    video.play();
+                });
+                remoteUserVideoContainer.appendChild(video);
+            });
+            call.on("close", () => {
+                video.remove();
+                console.log("Video stream closed");
+            });
+        });
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
 const connectVideoCall = (friendsId) => {
     var call = peer.call(friendsId, MyStream);
     var video = document.createElement("video");
@@ -204,7 +256,8 @@ function toggleAudio(ele) {
         ele.style.backgroundColor = "rgba(255,0,0,0.7)";
     }
 }
-var facing = 1;
+
+var facing = 0;
 
 function toogleCamera() {
     var facing_mode = facing ? "user" : "environment";
@@ -227,38 +280,11 @@ function toogleCamera() {
             audio: true,
         })
         .then((stream) => {
-            MyStream = stream;
+            MyStream.removeTrack(MyStream.getVideoTracks()[0]);
+            MyStream.addTrack(stream.getVideoTracks()[0]);
             console.log("Video Enabled");
-            myVideo.srcObject = stream;
-            myVideo.addEventListener("loadedmetadata", () => {
-                myVideo.play();
-            });
-            myVideoContainer.appendChild(myVideo);
-
-            peer.on("call", (call) => {
-                console.log(
-                    "When other user call me, this event is triggered, i am not host"
-                );
-                call.answer(MyStream); //sending him my stream
-                var video = document.createElement("video");
-                call.on("stream", function (remoteStream) {
-                    RemoteUserStream = remoteStream;
-                    //to get remote users strem
-                    console.log("Stream event triggered.");
-                    video.srcObject = remoteStream;
-                    video.addEventListener("loadedmetadata", () => {
-                        video.play();
-                    });
-                    remoteUserVideoContainer.appendChild(video);
-                });
-                call.on("close", () => {
-                    video.remove();
-                    console.log("Video stream closed");
-                });
-            });
         })
         .catch((err) => {
             console.log(err);
         });
 }
-toogleCamera();

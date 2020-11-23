@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            video {
+                /* transform: rotateY(180deg); */
+                width: 400px;
+            }
+        </style>
+    </head>
+    <body>
+        <video id="myVideo" autoplay controls></video>
+        <video id="played" autoplay controls></video>
+        <video id="another" autoplay controls>
+            <source src="./Alan Walker Style - My Heart (Lyric Video).mp4" />
+        </video>
+        <script>
+            var myVideo = document.createElement("video");
+            navigator.mediaDevices
+                .getUserMedia({
+                    video: true,
+                    audio: true,
+                })
+                .then((stream) => {
+                    console.log("Video Enabled");
+                    myVideo.srcObject = stream;
+                    myVideo.addEventListener("loadedmetadata", () => {
+                        myVideo.play();
+                    });
+                    document.querySelector("body").appendChild(myVideo);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            var played = document.getElementById("played");
+            var myVideo = document.getElementById("myVideo");
+            var another = document.getElementById("another");
+            myVideo.addEventListener("canplay", () => {
+                let stream;
+
+                const fps = 0;
+                stream = window.stream = myVideo.captureStream(fps);
+                //stream = leftVideo.mozCaptureStream(fps);
+                played.srcObject = stream;
+            });
+            another.addEventListener("canplay", () => {
+                let stream;
+                console.log("exe");
+                const fps = 0;
+                stream = window.anotherstream = another.captureStream(fps);
+                //stream = leftVideo.mozCaptureStream(fps);
+            });
+        </script>
+    </body>
+</html>
